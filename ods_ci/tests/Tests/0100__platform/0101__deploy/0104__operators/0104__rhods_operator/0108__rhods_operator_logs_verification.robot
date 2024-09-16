@@ -26,6 +26,7 @@ Verify RHODS Operator Logs
    [Tags]  Sanity
    ...     ODS-1007
    ...     Operator
+   Restart RHODS Operator Pod
    #Get the POD name
    ${data}       Run Keyword   Oc Get   kind=Pod     namespace=${OPERATOR_NAMESPACE}   label_selector=${OPERATOR_LABEL_SELECTOR}
    #Capture the logs based on containers
@@ -40,3 +41,9 @@ Verify RHODS Operator Logs
    #Verify if captured logs has any error entry if yes fail the TC
    IF   ${length} != ${0}    FAIL    There are some error entry present in opeartor logs '${entry_msg}'
    ...       ELSE   Log   Operator log looks clean
+
+*** Keywords ***
+Restart RHODS Operator Pod
+    [Documentation]    Restart the operator Pod by deleting it and waiting for a new one to be Ready
+    Oc Delete    kind=Pod     namespace=${OPERATOR_NAMESPACE}    label_selector=${OPERATOR_LABEL_SELECTOR}
+    Wait For Pods Status    namespace=${OPERATOR_NAMESPACE}  label_selector=${OPERATOR_LABEL_SELECTOR}  timeout=120
